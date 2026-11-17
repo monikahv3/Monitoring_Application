@@ -1,0 +1,16 @@
+/* Demo shell styles — keep light and readable */
+
+body {
+  min-height: 100vh;
+}
+
+.dashboard-shell h1 {
+  letter-spacing: -0.02em;
+}
+
+.placeholder-panel {
+  min-height: 12rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
