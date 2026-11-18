@@ -2,15 +2,93 @@
 
 {% block title %}Dashboard — Monitoring Demo{% endblock %}
 
+{% block head_extra %}
+  {% if summaries %}
+  <meta http-equiv="refresh" content="{{ auto_refresh_seconds }}">
+  {% endif %}
+{% endblock %}
+
 {% block content %}
   <div class="dashboard-shell">
-    <h1 class="h3 mb-2">Dashboard</h1>
-    <p class="text-secondary mb-4">
-      Local demo for read-only Linux server metrics. No servers registered yet.
-    </p>
-
-    <div class="placeholder-panel border rounded bg-white p-5 text-center text-secondary">
-      <p class="mb-0">Server list and live metrics will appear here.</p>
+    <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-3">
+      <div>
+        <h1 class="h3 mb-1">Dashboard</h1>
+        <p class="text-secondary mb-0">
+          Live summary (auto-refresh every {{ auto_refresh_seconds }}s). Monitoring is read-only.
+        </p>
+      </div>
+      <div class="d-flex gap-2">
+        <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('index') }}">Refresh</a>
+        <a class="btn btn-primary btn-sm" href="{{ url_for('add_server') }}">Add server</a>
+      </div>
     </div>
+
+    {% if not summaries %}
+      <div class="placeholder-panel border rounded bg-white p-5 text-center text-secondary">
+        <p class="mb-2">No servers registered yet.</p>
+        <a href="{{ url_for('add_server') }}">Add a Linux server</a>
+      </div>
+    {% else %}
+      <div class="table-responsive border rounded bg-white">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Server</th>
+              <th>Status</th>
+              <th>CPU</th>
+              <th>Memory</th>
+              <th>Load (1m)</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in summaries %}
+              {% set m = item.metrics %}
+              {% set status = m.status %}
+              <tr>
+                <td>
+                  <a href="{{ url_for('server_detail', server_id=item.server.id) }}" class="fw-semibold text-decoration-none">
+                    {{ item.label }}
+                  </a>
+                  <div class="small text-secondary">
+                    {{ item.server.ssh_username }}@{{ item.server.host }}:{{ item.server.port }}
+                  </div>
+                </td>
+                <td>
+                  {% if status == 'ok' %}
+                    <span class="badge text-bg-success">OK</span>
+                  {% elif status == 'unreachable' %}
+                    <span class="badge text-bg-danger">Unreachable</span>
+                  {% else %}
+                    <span class="badge text-bg-warning text-dark">Error</span>
+                  {% endif %}
+                  {% if m.error %}
+                    <div class="small text-secondary">{{ m.error }}</div>
+                  {% endif %}
+                </td>
+                <td>
+                  {% if m.cpu_percent is not none %}{{ m.cpu_percent }}%{% else %}—{% endif %}
+                </td>
+                <td>
+                  {% if m.memory %}{{ m.memory.percent }}%{% else %}—{% endif %}
+                </td>
+                <td>
+                  {% if m.load %}{{ m.load['1'] }}{% else %}—{% endif %}
+                </td>
+                <td class="text-end">
+                  <form method="post"
+                        action="{{ url_for('remove_server', server_id=item.server.id) }}"
+                        class="d-inline"
+                        onsubmit="return confirm('Remove {{ item.label }} from monitoring?');">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn btn-outline-danger btn-sm">Remove</button>
+                  </form>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% endif %}
   </div>
 {% endblock %}

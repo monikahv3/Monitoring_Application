@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}Add server — Monitoring Demo{% endblock %}
+
+{% block content %}
+  <div class="row justify-content-center">
+    <div class="col-lg-7">
+      <h1 class="h3 mb-2">Add Linux server</h1>
+      <p class="text-secondary mb-4">
+        Credentials are stored locally for this demo. Prefer a private key path over a password.
+        See <code>docs/security.md</code>.
+      </p>
+
+      {% if errors %}
+        <div class="alert alert-danger" role="alert">
+          <ul class="mb-0">
+            {% for err in errors %}
+              <li>{{ err }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endif %}
+
+      <form method="post" action="{{ url_for('add_server') }}" class="border rounded bg-white p-4" autocomplete="off">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+        <div class="mb-3">
+          <label class="form-label" for="display_name">Display name (optional)</label>
+          <input class="form-control" type="text" id="display_name" name="display_name"
+                 value="{{ form.display_name }}">
+        </div>
+
+        <div class="row">
+          <div class="col-md-8 mb-3">
+            <label class="form-label" for="host">Hostname / IP</label>
+            <input class="form-control" type="text" id="host" name="host"
+                   value="{{ form.host }}" required>
+          </div>
+          <div class="col-md-4 mb-3">
+            <label class="form-label" for="port">SSH port</label>
+            <input class="form-control" type="number" id="port" name="port"
+                   min="1" max="65535" value="{{ form.port }}" required>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="ssh_username">SSH username</label>
+          <input class="form-control" type="text" id="ssh_username" name="ssh_username"
+                 value="{{ form.ssh_username }}" required>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="auth_type">Auth type</label>
+          <select class="form-select" id="auth_type" name="auth_type">
+            <option value="password" {% if form.auth_type == 'password' %}selected{% endif %}>Password</option>
+            <option value="key" {% if form.auth_type == 'key' %}selected{% endif %}>Private key path</option>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="password">SSH password</label>
+          <input class="form-control" type="password" id="password" name="password"
+                 autocomplete="new-password" value="">
+          <div class="form-text">Left blank on redisplay — never echoed back.</div>
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label" for="key_path">Private key path</label>
+          <input class="form-control" type="text" id="key_path" name="key_path"
+                 placeholder="/home/you/.ssh/id_ed25519" value="">
+          <div class="form-text">Local filesystem path on this demo host. Not shown after save.</div>
+        </div>
+
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn btn-primary">Add server</button>
+          <a class="btn btn-outline-secondary" href="{{ url_for('index') }}">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock %}

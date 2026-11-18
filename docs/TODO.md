@@ -63,120 +63,121 @@ Incremental checklist for AI-assisted development. Complete items **in order**. 
 ## Phase 2 — CI/CD (GitHub Actions)
 
 ### 2.1 Basic CI workflow
-- [ ] Add `.github/workflows/ci.yml`
-- [ ] On push/PR: checkout, set up Python, install deps, run `pytest`
-- [ ] **Security:** No secrets in workflow logs; use env only for non-sensitive test config
-- [ ] **Docs:** Short “CI” section in `README.md` describing what Actions runs
+- [x] Add `.github/workflows/ci.yml`
+- [x] On push/PR: checkout, set up Python, install deps, run `pytest`
+- [x] **Security:** No secrets in workflow logs; use env only for non-sensitive test config
+- [x] **Docs:** Short “CI” section in `README.md` describing what Actions runs
 
 ### 2.2 Keep CI green for demo
-- [ ] Ensure tests pass without real SSH hosts (mock later collectors)
-- [ ] Pin/cache Python deps in Actions for speed (optional, keep minimal)
-- [ ] **Security:** Do not upload DB files or `.env` as artifacts
-- [ ] **Docs:** Note that CI validates auth/UI smoke tests only (not live SSH)
+- [x] Ensure tests pass without real SSH hosts (mock later collectors)
+- [x] Pin/cache Python deps in Actions for speed (optional, keep minimal)
+- [x] **Security:** Do not upload DB files or `.env` as artifacts
+- [x] **Docs:** Note that CI validates auth/UI smoke tests only (not live SSH)
 
 ---
 
 ## Phase 3 — Server inventory (add / remove)
 
 ### 3.1 Server model & migrations-lite
-- [ ] SQLite table for servers: display name, host, SSH port, SSH username, auth type, credential reference
-- [ ] **Security:** Do not store SSH passwords/keys in plaintext if avoidable; prefer env/path reference; document demo risk if storing locally
-- [ ] **Docs:** Document server fields and credential handling in `docs/` or `README.md`
+- [x] SQLite table for servers: display name, host, SSH port, SSH username, auth type, credential reference
+- [x] **Security:** Do not store SSH passwords/keys in plaintext if avoidable; prefer env/path reference; document demo risk if storing locally
+- [x] **Docs:** Document server fields and credential handling in `docs/` or `README.md`
 
 ### 3.2 Add-server form (admin session required)
-- [ ] UI form to add Linux server (host/IP, port default 22, user, password or key path, optional label)
-- [ ] Validate inputs (required fields, port range)
-- [ ] **Security:** CSRF protection (Flask-WTF or equivalent); authorize only logged-in session; never echo secrets back into HTML
-- [ ] **Docs:** Document how to add a server locally
+- [x] UI form to add Linux server (host/IP, port default 22, user, password or key path, optional label)
+- [x] Validate inputs (required fields, port range)
+- [x] **Security:** CSRF protection (Flask-WTF or equivalent); authorize only logged-in session; never echo secrets back into HTML
+- [x] **Docs:** Document how to add a server locally
 
 ### 3.3 List & remove servers
-- [ ] Dashboard list of registered servers (no live metrics yet)
-- [ ] Remove-server action with confirm
-- [ ] **Security:** Mutations require session; use POST for delete; confirm intent
-- [ ] **Docs:** Update screenshots/notes for list/remove
+- [x] Dashboard list of registered servers (no live metrics yet)
+- [x] Remove-server action with confirm
+- [x] **Security:** Mutations require session; use POST for delete; confirm intent
+- [x] **Docs:** Update screenshots/notes for list/remove
 
 ### 3.4 Unit tests for server CRUD
-- [ ] Tests: add server (authenticated), reject unauthenticated add/remove, list servers, remove server
-- [ ] **Security:** Tests ensure credential fields are not rendered in list view
-- [ ] **Docs:** Mention CRUD tests under test instructions
+- [x] Tests: add server (authenticated), reject unauthenticated add/remove, list servers, remove server
+- [x] **Security:** Tests ensure credential fields are not rendered in list view
+- [x] **Docs:** Mention CRUD tests under test instructions
 
 ---
 
 ## Phase 4 — SSH metrics collection (live only)
 
 ### 4.1 SSH client wrapper
-- [ ] Add Paramiko (or chosen SSH lib) dependency
-- [ ] Small helper: connect with timeout, run command, return stdout/stderr/exit
-- [ ] **Security:** Timeouts; do not log passwords/keys; prefer key file paths; host key policy documented (demo may use AutoAdd with clear warning)
-- [ ] **Docs:** Document SSH approach and demo host-key warning
+- [x] Add Paramiko (or chosen SSH lib) dependency
+- [x] Small helper: connect with timeout, run command, return stdout/stderr/exit
+- [x] **Security:** Timeouts; do not log passwords/keys; prefer key file paths; host key policy documented (demo may use AutoAdd with clear warning)
+- [x] **Docs:** Document SSH approach and demo host-key warning
 
 ### 4.2 Collect CPU & memory
-- [ ] Remote commands/parsing for CPU % and memory used/available
-- [ ] Return structured dict; map SSH failures to clear error status
-- [ ] **Security:** Use fixed command strings (no user-controlled shell concatenation)
-- [ ] **Docs:** Note which remote commands are used
+- [x] Remote commands/parsing for CPU % and memory used/available
+- [x] Return structured dict; map SSH failures to clear error status
+- [x] **Security:** Use fixed command strings (no user-controlled shell concatenation)
+- [x] **Docs:** Note which remote commands are used
 
 ### 4.3 Collect load average & disk
-- [ ] Load average (1/5/15) and disk usage per mount
-- [ ] **Security:** Same fixed-command rule; sanitize/limit mounts shown if huge
-- [ ] **Docs:** Update metrics list
+- [x] Load average (1/5/15) and disk usage per mount
+- [x] **Security:** Same fixed-command rule; sanitize/limit mounts shown if huge
+- [x] **Docs:** Update metrics list
 
 ### 4.4 Collect network & listening ports
-- [ ] Network RX/TX and listening ports (+ process if available)
-- [ ] **Security:** Read-only remote commands only; no remote writes
-- [ ] **Docs:** Update metrics list
+- [x] Network RX/TX and listening ports (+ process if available)
+- [x] **Security:** Read-only remote commands only; no remote writes
+- [x] **Docs:** Update metrics list
 
 ### 4.5 Unit tests with mocked SSH
-- [ ] Mock SSH helper; test parsers and error handling without real hosts
-- [ ] **Security:** Fixtures must not contain real credentials
-- [ ] **Docs:** Note that metrics tests are mocked in CI
+- [x] Mock SSH helper; test parsers and error handling without real hosts
+- [x] **Security:** Fixtures must not contain real credentials
+- [x] **Docs:** Note that metrics tests are mocked in CI
 
 ---
 
 ## Phase 5 — Read-only monitoring UI
 
 ### 5.1 Dashboard live summary
-- [ ] For each server, show key live stats (or unreachable/error badge)
-- [ ] Auto-refresh every 5–10s (pick one, e.g. 10s) + manual refresh
-- [ ] **Security:** Session required; no credential leakage in HTML/JSON
-- [ ] **Docs:** Document refresh behavior
+- [x] For each server, show key live stats (or unreachable/error badge)
+- [x] Auto-refresh every 5–10s (pick one, e.g. 10s) + manual refresh
+- [x] **Security:** Session required; no credential leakage in HTML/JSON
+- [x] **Docs:** Document refresh behavior
 
 ### 5.2 Server detail page (read-only)
-- [ ] Full metrics view: CPU, memory, network, ports, disk, load
-- [ ] Clear empty/error states
-- [ ] **Security:** Read-only page; no forms that change remote state
-- [ ] **Docs:** Document detail page contents
+- [x] Full metrics view: CPU, memory, network, ports, disk, load
+- [x] Clear empty/error states
+- [x] **Security:** Read-only page; no forms that change remote state
+- [x] **Docs:** Document detail page contents
 
 ### 5.3 UI polish (demo-minimal)
-- [ ] Status indicators (OK / unreachable / error), readable tables/cards
-- [ ] **Security:** Escape all server-provided strings in templates (Jinja autoescape on)
-- [ ] **Docs:** Brief UI overview in `README.md`
+- [x] Status indicators (OK / unreachable / error), readable tables/cards
+- [x] **Security:** Escape all server-provided strings in templates (Jinja autoescape on)
+- [x] **Docs:** Brief UI overview in `README.md`
 
 ### 5.4 Integration-style tests (local)
-- [ ] Test detail/dashboard routes with mocked collectors
-- [ ] **Security:** Assert responses never include SSH passwords/keys
-- [ ] **Docs:** How to run full test suite
+- [x] Test detail/dashboard routes with mocked collectors
+- [x] **Security:** Assert responses never include SSH passwords/keys
+- [x] **Docs:** How to run full test suite
 
 ---
 
 ## Phase 6 — Hardening, docs wrap-up, demo checklist
 
 ### 6.1 Demo security pass
-- [ ] Review: hashed passwords, gitignore, bind localhost, no secrets in logs/templates, CSRF on forms
-- [ ] Add short `docs/security.md` (demo caveats: credential storage, host keys, local-only)
-- [ ] **Security:** Explicit “not production” warning
-- [ ] **Docs:** Link `docs/security.md` from `README.md`
+- [x] Review: hashed passwords, gitignore, bind localhost, no secrets in logs/templates, CSRF on forms
+- [x] Add short `docs/security.md` (demo caveats: credential storage, host keys, local-only)
+- [x] **Security:** Explicit “not production” warning
+- [x] **Docs:** Link `docs/security.md` from `README.md`
 
 ### 6.2 Final local run docs
-- [ ] Trim `README.md` to minimal steps: venv → install → env → run → login → add server
-- [ ] Confirm PRD success criteria covered
-- [ ] **Security:** Remind users to use disposable demo credentials only
-- [ ] **Docs:** Cross-link `requirements.md`, `TODO.md`, `security.md`
+- [x] Trim `README.md` to minimal steps: venv → install → env → run → login → add server
+- [x] Confirm PRD success criteria covered
+- [x] **Security:** Remind users to use disposable demo credentials only
+- [x] **Docs:** Cross-link `requirements.md`, `TODO.md`, `security.md`
 
 ### 6.3 CI final check
-- [ ] Confirm GitHub Actions workflow still runs lint/tests (tests at minimum)
-- [ ] **Security:** No secret values in workflow files
-- [ ] **Docs:** CI badge optional; keep README CI note accurate
+- [x] Confirm GitHub Actions workflow still runs lint/tests (tests at minimum)
+- [x] **Security:** No secret values in workflow files
+- [x] **Docs:** CI badge optional; keep README CI note accurate
+
 
 ---
 

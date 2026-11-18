@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+
+{% block title %}{{ label }} — Monitoring Demo{% endblock %}
+
+{% block head_extra %}
+  <meta http-equiv="refresh" content="{{ auto_refresh_seconds }}">
+{% endblock %}
+
+{% block content %}
+  <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-3">
+    <div>
+      <p class="mb-1"><a href="{{ url_for('index') }}">&larr; Dashboard</a></p>
+      <h1 class="h3 mb-1">{{ label }}</h1>
+      <p class="text-secondary mb-0">
+        {{ server.ssh_username }}@{{ server.host }}:{{ server.port }}
+        · auth: {{ server.auth_type }}
+        · auto-refresh {{ auto_refresh_seconds }}s
+      </p>
+    </div>
+    <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('server_detail', server_id=server.id) }}">Refresh</a>
+  </div>
+
+  {% set status = metrics.status %}
+  <div class="mb-3">
+    {% if status == 'ok' %}
+      <span class="badge text-bg-success">OK</span>
+    {% elif status == 'unreachable' %}
+      <span class="badge text-bg-danger">Unreachable</span>
+    {% else %}
+      <span class="badge text-bg-warning text-dark">Error</span>
+    {% endif %}
+    {% if metrics.error %}
+      <span class="text-secondary small ms-2">{{ metrics.error }}</span>
+    {% endif %}
+  </div>
+
+  {% if status != 'ok' %}
+    <div class="border rounded bg-white p-4 text-secondary">
+      Live metrics are unavailable. Check SSH reachability, credentials, and host key policy notes in
+      <code>docs/security.md</code>.
+    </div>
+  {% else %}
+    <div class="row g-3 mb-3">
+      <div class="col-md-4">
+        <div class="metric-panel border rounded bg-white p-3 h-100">
+          <div class="text-secondary small">CPU</div>
+          <div class="fs-4 fw-semibold">
+            {% if metrics.cpu_percent is not none %}{{ metrics.cpu_percent }}%{% else %}—{% endif %}
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="metric-panel border rounded bg-white p-3 h-100">
+          <div class="text-secondary small">Memory</div>
+          <div class="fs-4 fw-semibold">
+            {% if metrics.memory %}{{ metrics.memory.percent }}%{% else %}—{% endif %}
+          </div>
+          {% if metrics.memory %}
+            <div class="small text-secondary">
+              used {{ (metrics.memory.used / 1048576)|round(0)|int }} MiB /
+              {{ (metrics.memory.total / 1048576)|round(0)|int }} MiB
+            </div>
+          {% endif %}
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="metric-panel border rounded bg-white p-3 h-100">
+          <div class="text-secondary small">Load average</div>
+          {% if metrics.load %}
+            <div class="fs-5 fw-semibold">{{ metrics.load['1'] }} / {{ metrics.load['5'] }} / {{ metrics.load['15'] }}</div>
+            <div class="small text-secondary">1 / 5 / 15 minute</div>
+          {% else %}
+            <div class="fs-4 fw-semibold">—</div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <div class="row g-3">
+      <div class="col-lg-6">
+        <div class="border rounded bg-white p-3">
+          <h2 class="h6">Disk</h2>
+          {% if metrics.disk %}
+            <div class="table-responsive">
+              <table class="table table-sm mb-0">
+                <thead><tr><th>Mount</th><th>Used</th><th>Total</th><th>%</th></tr></thead>
+                <tbody>
+                  {% for d in metrics.disk %}
+                    <tr>
+                      <td>{{ d.mount }}</td>
+                      <td>{{ (d.used / 1073741824)|round(1) }} GiB</td>
+                      <td>{{ (d.total / 1073741824)|round(1) }} GiB</td>
+                      <td>{{ d.percent }}%</td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          {% else %}
+            <p class="text-secondary mb-0">No disk mounts reported.</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="col-lg-6">
+        <div class="border rounded bg-white p-3 mb-3">
+          <h2 class="h6">Network (byte counters)</h2>
+          {% if metrics.network %}
+            <div class="table-responsive">
+              <table class="table table-sm mb-0">
+                <thead><tr><th>Iface</th><th>RX</th><th>TX</th></tr></thead>
+                <tbody>
+                  {% for n in metrics.network %}
+                    <tr>
+                      <td>{{ n.iface }}</td>
+                      <td>{{ n.rx_bytes }}</td>
+                      <td>{{ n.tx_bytes }}</td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          {% else %}
+            <p class="text-secondary mb-0">No interfaces reported.</p>
+          {% endif %}
+        </div>
+
+        <div class="border rounded bg-white p-3">
+          <h2 class="h6">Listening ports</h2>
+          {% if metrics.ports %}
+            <div class="table-responsive">
+              <table class="table table-sm mb-0">
+                <thead><tr><th>Proto</th><th>Port</th><th>Process</th></tr></thead>
+                <tbody>
+                  {% for p in metrics.ports %}
+                    <tr>
+                      <td>{{ p.proto }}</td>
+                      <td>{{ p.port }}</td>
+                      <td>{{ p.process or '—' }}</td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          {% else %}
+            <p class="text-secondary mb-0">No listening ports reported.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  {% endif %}
+{% endblock %}
